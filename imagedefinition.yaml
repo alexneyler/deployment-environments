@@ -1,0 +1,26 @@
+$schema: "1.0"
+name: frontend-eng
+image: microsoftwindowsdesktop_windows-ent-cpc_win11-24H2-ent-cpc
+description: "Alex's test definition"
+tasks:
+    - name: ~/winget
+      description: Install Visual Studio Code
+      parameters:
+        package:  Microsoft.VisualStudioCode
+    - name: git-clone
+      description: Clone deployment-environments repository into C:\s
+      parameters:
+        repositoryUrl: https://github.com/alexneyler/deployment-environments.git
+        directory: C:\s
+    - name: git-clone
+      description: Clone azure-lab-services repository into C:\s
+      parameters:
+        repositoryUrl: https://devdiv@dev.azure.com/devdiv/OnlineServices/_git/azure-lab-services
+        directory: C:\s
+        pat: '{{ado://OnlineServices}}'
+    - name: git-clone
+      description: Clone azure-devcenter repository into C:\s
+      parameters:
+        repositoryUrl: https://devdiv@dev.azure.com/devdiv/OnlineServices/_git/azure-devcenter
+        directory: C:\s
+        pat: '{{ado://OnlineServices}}'
