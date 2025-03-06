@@ -1,7 +1,4 @@
-$schema: "1.0"
-name: frontend-eng
-image: microsoftwindowsdesktop_windows-ent-cpc_win11-24H2-ent-cpc
-description: "Alex's test definition"
+$schema: 1.0
 tasks:
     - name: ~/winget
       description: Install Visual Studio Code
@@ -24,3 +21,8 @@ tasks:
         repositoryUrl: https://devdiv@dev.azure.com/devdiv/OnlineServices/_git/azure-devcenter
         directory: C:\s
         pat: '{{ado://OnlineServices}}'
+    - name: powershell
+      description: Set up git config
+      parameters:
+        command: ./git.ps1
+        workingDirectory: C:\s
