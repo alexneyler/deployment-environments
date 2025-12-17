@@ -1,19 +1,21 @@
-$schema: '1.0'
-name: 'test-img'
-image: 'microsoftwindowsdesktop_windows-ent-cpc_win11-24h2-ent-cpc'
-description: 'This definition is the standard image for all projects'
+$schema: "1.0"
+name: "test-img"
+image: "microsoftvisualstudio_visualstudioplustools_vs-2022-ent-general-win11-m365-gen2"
+
 tasks:
-  - name: ~/powershell
+  - name: powershell
     timeout: 7200
     description: Set up folders
     parameters:
       command: |
         mkdir C:\test
-  - name: ~/winget
+
+  - name: winget
     description: Install Visual Studio Code
     parameters:
-      package:  Microsoft.VisualStudioCode
-  - name: ~/powershell
+      package: Microsoft.VisualStudioCode
+
+  - name: powershell
     timeout: 7200
     description: Install Winget
     parameters:
