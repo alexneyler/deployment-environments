@@ -26,15 +26,8 @@ tasks:
                 $installPowershellUri = "https://aka.ms/install-powershell.ps1"
                 $code = Invoke-RestMethod -Uri $installPowershellUri
                 $null = New-Item -Path function:Install-PowerShell -Value $code
-                WithRetry -ScriptBlock {
-                    if ("$($PsInstallScope)" -eq "CurrentUser") {
-                        Install-PowerShell -UseMSI
-                    }
-                    else {
-                        # The -Quiet flag requires admin permissions
-                        Install-PowerShell -UseMSI -Quiet
-                    }
-                } -Maximum 5 -Delay 100 -FailureNotification "Failed to install Powershell from $installPowershellUri"
+                Install-PowerShell -UseMSI
+                
                 # Need to update the path post install
                 $env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User") + ";C:\Program Files\PowerShell\7"
                 Write-Host "Done Installing PowerShell 7"
