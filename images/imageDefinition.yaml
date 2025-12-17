@@ -20,6 +20,37 @@ tasks:
     description: Install Winget
     parameters:
       command: |
-        Install-Module -Name Microsoft.WinGet.Client -Force -Verbose -AllowClobber -Scope CurrentUser -RequiredVersion 1.9.2411
-        Import-Module Microsoft.WinGet.Client
-        Install-WinGetPackage -Id Kubernetes.kubectl -Mode Silent -Force -Location C:\test
+        function InstallPS7 {
+            if (!(Get-Command pwsh -ErrorAction SilentlyContinue)) {
+                Write-Host "Installing PowerShell 7"
+                $installPowershellUri = "https://aka.ms/install-powershell.ps1"
+                $code = Invoke-RestMethod -Uri $installPowershellUri
+                $null = New-Item -Path function:Install-PowerShell -Value $code
+                WithRetry -ScriptBlock {
+                    if ("$($PsInstallScope)" -eq "CurrentUser") {
+                        Install-PowerShell -UseMSI
+                    }
+                    else {
+                        # The -Quiet flag requires admin permissions
+                        Install-PowerShell -UseMSI -Quiet
+                    }
+                } -Maximum 5 -Delay 100 -FailureNotification "Failed to install Powershell from $installPowershellUri"
+                # Need to update the path post install
+                $env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User") + ";C:\Program Files\PowerShell\7"
+                Write-Host "Done Installing PowerShell 7"
+            }
+            else {
+                Write-Host "PowerShell 7 is already installed"
+            }
+        }
+
+        # Install PowerShell 7 if not already installed
+        InstallPS7
+
+        # Install WinGet module
+        $installWingetModule = "Install-Module -Name Microsoft.WinGet.Client -Force -Verbose -AllowClobber -Scope CurrentUser -RequiredVersion 1.9.2411"
+        Invoke-CimMethod -ClassName Win32_Process -MethodName Create -Arguments @{CommandLine = "C:\Program Files\PowerShell\7\pwsh.exe -Command `"$($installWingetModule)`"" }
+
+        # Install using PowerShell 7
+        $installPackageCommand = "Install-WinGetPackage -Id Kubernetes.kubectl -Mode Silent -Force -Location C:\test"
+        Invoke-CimMethod -ClassName Win32_Process -MethodName Create -Arguments @{CommandLine = "C:\Program Files\PowerShell\7\pwsh.exe -Command `"$($installPackageCommand)`"" }
