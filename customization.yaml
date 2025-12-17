@@ -1,28 +1,20 @@
 $schema: 1.0
 tasks:
+    - name: ~/powershell
+      timeout: 7200
+      description: Set up folders
+      parameters:
+        command: |
+          mkdir C:\test
     - name: ~/winget
       description: Install Visual Studio Code
       parameters:
         package:  Microsoft.VisualStudioCode
-    - name: git-clone
-      description: Clone deployment-environments repository into C:\s
+    - name: ~/powershell
+      timeout: 7200
+      description: Install Winget
       parameters:
-        repositoryUrl: https://github.com/alexneyler/deployment-environments.git
-        directory: C:\s
-    - name: git-clone
-      description: Clone azure-lab-services repository into C:\s
-      parameters:
-        repositoryUrl: https://devdiv@dev.azure.com/devdiv/OnlineServices/_git/azure-lab-services
-        directory: C:\s
-        pat: '{{ado://OnlineServices}}'
-    - name: git-clone
-      description: Clone azure-devcenter repository into C:\s
-      parameters:
-        repositoryUrl: https://devdiv@dev.azure.com/devdiv/OnlineServices/_git/azure-devcenter
-        directory: C:\s
-        pat: '{{ado://OnlineServices}}'
-    - name: powershell
-      description: Set up git config
-      parameters:
-        command: ./git.ps1
-        workingDirectory: C:\s
+        command: |
+          Install-Module -Name Microsoft.WinGet.Client -Force -Verbose -AllowClobber -Scope CurrentUser -RequiredVersion 1.9.2411
+          Import-Module Microsoft.WinGet.Client
+          Install-WinGetPackage -Id Kubernetes.kubectl -Mode Silent -Force -Location C:\test
