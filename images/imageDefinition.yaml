@@ -2,48 +2,15 @@ $schema: "1.0"
 name: "test-img"
 image: "microsoftvisualstudio_visualstudioplustools_vs-2022-ent-general-win11-m365-gen2"
 
+buildProperties:
+    networkConnection: "nc-alexey-cus"
+
 tasks:
   - name: powershell
     timeout: 7200
-    description: Set up folders
+    description: Set up
     parameters:
       command: |
         mkdir C:\test
-
-  - name: winget
-    description: Install Visual Studio Code
-    parameters:
-      package: Microsoft.VisualStudioCode
-
-  - name: powershell
-    timeout: 7200
-    description: Install Winget
-    parameters:
-      command: |
-        function InstallPS7 {
-            if (!(Get-Command pwsh -ErrorAction SilentlyContinue)) {
-                Write-Host "Installing PowerShell 7"
-                $installPowershellUri = "https://aka.ms/install-powershell.ps1"
-                $code = Invoke-RestMethod -Uri $installPowershellUri
-                $null = New-Item -Path function:Install-PowerShell -Value $code
-                Install-PowerShell -UseMSI
-                
-                # Need to update the path post install
-                $env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User") + ";C:\Program Files\PowerShell\7"
-                Write-Host "Done Installing PowerShell 7"
-            }
-            else {
-                Write-Host "PowerShell 7 is already installed"
-            }
-        }
-
-        # Install PowerShell 7 if not already installed
-        InstallPS7
-
-        # Install WinGet module
-        $installWingetModule = "Install-Module -Name Microsoft.WinGet.Client -Force -Verbose -AllowClobber -Scope CurrentUser -RequiredVersion 1.9.2411"
-        Invoke-CimMethod -ClassName Win32_Process -MethodName Create -Arguments @{CommandLine = "C:\Program Files\PowerShell\7\pwsh.exe -Command `"$($installWingetModule)`"" }
-
-        # Install using PowerShell 7
-        $installPackageCommand = "Install-WinGetPackage -Id Kubernetes.kubectl -Mode Silent -Force -Location C:\test"
-        Invoke-CimMethod -ClassName Win32_Process -MethodName Create -Arguments @{CommandLine = "C:\Program Files\PowerShell\7\pwsh.exe -Command `"$($installPackageCommand)`"" }
+        Write-Content -Path C:\test\info.txt -Value "{{https://kv-alexey.vault.azure.net/secrets/MySecret}}"
+        Write-Output "Setup complete"
