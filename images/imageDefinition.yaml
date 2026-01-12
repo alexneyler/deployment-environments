@@ -12,5 +12,7 @@ tasks:
     parameters:
       command: |
         mkdir C:\test
-        Write-Content -Path C:\test\info.txt -Value "{{https://kv-alexey.vault.azure.net/secrets/MySecret}}"
+        Set-Content -Path C:\test\info.txt -Value "{{https://kv-alexey.vault.azure.net/secrets/MySecret}}"
+        $content = Get-Content -Path C:\test\info.txt
+        Write-Output "Secret content: $content"
         Write-Output "Setup complete"
